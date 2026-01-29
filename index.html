@@ -2,36 +2,128 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>AR Room App</title>
+  <title>AR Room Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- A-Frame + AR.js -->
   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/ar-js-org@3.3.2/aframe/build/aframe-ar.js"></script>
+
   <style>
-    body { margin:0; overflow:hidden; }
-    #ui { position:absolute; bottom:10px; width:100%; text-align:center; z-index:2; }
-    button { padding:10px 15px; margin:5px; font-size:16px; }
-    #score { position:absolute; top:10px; left:10px; font-size:18px; color:white; z-index:2; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    #score {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background: #000;
+      color: #00ffcc;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: bold;
+      z-index: 9999;
+    }
+
+    #ui {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      z-index: 9999;
+      pointer-events: auto;
+    }
+
+    button {
+      background: linear-gradient(135deg, #ff6a00, #ffd500);
+      border: none;
+      border-radius: 25px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #000;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
   </style>
 </head>
+
 <body>
 
 <div id="score">Score: 0</div>
+
 <div id="ui">
-  <button onclick="addCube()">Add Object</button>
-  <button onclick="changeWallColor()">Change Wall Color</button>
-  <button onclick="measureObject()">Measure</button>
+  <button onclick="addObject()">ADD OBJECT</button>
+  <button onclick="changeColor()">CHANGE COLOR</button>
+  <button onclick="measure()">MEASURE</button>
 </div>
 
-<a-scene embedded arjs>
-  <!-- AR Marker (default) -->
+<a-scene
+  embedded
+  arjs="sourceType: webcam; debugUIEnabled: false;"
+>
   <a-marker preset="hiro">
-    <a-box id="cube" position="0 0.5 0" rotation="0 45 0" color="#4CC3D9" scale="0.5 0.5 0.5" visible="false"></a-box>
-    <a-plane id="floor" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
+    <a-box
+      id="cube"
+      position="0 0.5 0"
+      scale="0.6 0.6 0.6"
+      color="#ff0055"
+      visible="false"
+      animation="property: rotation; to: 0 360 0; loop: true; dur: 4000">
+    </a-box>
+
+    <a-plane
+      rotation="-90 0 0"
+      width="4"
+      height="4"
+      color="#7BC8A4">
+    </a-plane>
   </a-marker>
+
   <a-entity camera></a-entity>
 </a-scene>
 
-<script src="game.js"></script>
+<script>
+  let score = 0;
+  const cube = document.getElementById("cube");
+
+  function addObject() {
+    cube.setAttribute("visible", true);
+    cube.setAttribute("color", randomColor());
+    score += 10;
+    updateScore();
+  }
+
+  function changeColor() {
+    cube.setAttribute("color", randomColor());
+    score += 5;
+    updateScore();
+  }
+
+  function measure() {
+    const value = Math.floor(Math.random() * 100) + 20;
+    alert("Measured: " + value + " cm");
+    score += Math.floor(value / 10);
+    updateScore();
+  }
+
+  function updateScore() {
+    document.getElementById("score").innerText = "Score: " + score;
+  }
+
+  function randomColor() {
+    const colors = ["#ff1744", "#00e5ff", "#76ff03", "#ff9100"];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+</script>
+
 </body>
-  </html>
+</html>
